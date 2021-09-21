@@ -3,7 +3,7 @@
 
   <h1 class="display-4">Edit Note</h1>
 
-  <form method="POST">  
+  <!-- <form method="POST">  
     {{form.hidden_tag()}}
     <label for="title">Title</label>
     <input name="title" value="{{note.title}}" id="edit-note-title">
@@ -13,6 +13,25 @@
 
     <button type="submit">Save Edits</button>
 
-  </form>
+  </form> -->
+
+  <form method="POST">
+
+    {{ form.hidden_tag() }}
+  
+    {% for field in form
+    if field.widget.input_type != 'hidden' %}
+    <p>
+      {{ field.label }}
+      {{ field }}
+  
+      {% for error in field.errors %}
+      {{ error }}
+      {% endfor %}
+    </p>
+    {% endfor %}
+  
+    <button type="submit">Save</button>
+  
 
 {% endblock %}

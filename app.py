@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, session, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import connect_db, db, User, Note
-from forms import RegisterForm, LoginForm, CSRFOnlyForm
+from forms import NoteForm, RegisterForm, LoginForm, CSRFOnlyForm
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///hashing_login"
@@ -104,23 +104,13 @@ def logout():
 def show_or_update_note_details(note_id):
     """Produce note edit form or handle edit of note."""
 
-    form = CSRFOnlyForm()
     note = Note.query.get_or_404(note_id)
+    form = NoteForm(obj=note)
 
     if form.validate_on_submit():
-        title = request.form["title"]
-        content = request.form["content"]
         
-        note.title = title
-        note.content = content
-
-        # user = User.authenticate(username, pwd)
-        # if user:
-        #     session["username"] = user.username
-        #     return redirect(f"/users/{username}")
-
-        # else:
-        #     form.username.errors = ["Bad name/password"]
+        note.title = form.title.data
+        note.content = form.content.data
 
         db.session.add(note)
         db.session.commit()
