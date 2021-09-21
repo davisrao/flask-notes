@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h1 class="display-4">Edit Note</h1>
+
+  <form method="POST">  
+    {{form.hidden_tag()}}
+    <label for="title">Title</label>
+    <input name="title" value="{{note.title}}" id="edit-note-title">
+
+    <label for="content">Content</label>
+    <input name="content" value="{{note.content}}" id="edit-note-content">
+
+    <button type="submit">Save Edits</button>
+
+  </form>
+
+{% endblock %}
