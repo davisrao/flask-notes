@@ -1,4 +1,3 @@
-from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
@@ -19,35 +18,47 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    username = db.Column(db.String(20),
-                         primary_key=True)
+    username = db.Column(
+        db.String(20),
+        primary_key=True
+    )
 
-    password = db.Column(db.String(100),
-                         nullable=False)
+    password = db.Column(
+        db.String(100),
+        nullable=False
+    )
 
-    email = db.Column(db.String(50),
-                         nullable=False,
-                         unique=True)
+    email = db.Column(
+        db.String(50),
+        nullable=False,
+        unique=True
+    )
 
-    first_name = db.Column(db.String(30),
-                        nullable=False)
+    first_name = db.Column(
+        db.String(30),
+        nullable=False
+    )
     
-    last_name = db.Column(db.String(30),
-                    nullable=False)
+    last_name = db.Column(
+        db.String(30),
+        nullable=False
+    )
 
-    # start_register
     @classmethod
     def register(cls, username, pwd, email, first_name, last_name):
-        """Register user w/hashed password & return user."""
+        """Register user w/ hashed password & return user."""
 
         hashed = bcrypt.generate_password_hash(pwd).decode('utf8')
 
-        # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed, email=email, first_name=first_name, last_name=last_name)
+        return cls(
+            username=username, 
+            password=hashed, 
+            email=email, 
+            first_name=first_name, 
+            last_name=last_name
+        )
+        # NOTE: Could do the db.session.add() here
 
-    # end_register
-
-    # start_authenticate
     @classmethod
     def authenticate(cls, username, pwd):
         """Validate that user exists & password is correct.
@@ -55,11 +66,9 @@ class User(db.Model):
         Return user if valid; else return False.
         """
 
-        u = cls.query.filter_by(username=username).one_or_none()
+        u = cls.query.get(username)
 
         if u and bcrypt.check_password_hash(u.password, pwd):
-            # return user instance
             return u
         else:
             return False
-    # end_authenticate
