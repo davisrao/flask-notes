@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
+from wtforms.validators import Email
 from models import connect_db, db, User
 from forms import RegisterForm, LoginForm
 
@@ -33,8 +34,17 @@ def register():
     if form.validate_on_submit():
         name = form.username.data
         pwd = form.password.data
+        email = form.email.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
 
-        user = User.register(name, pwd)
+        user = User.register(
+            name, 
+            pwd,
+            email,
+            first_name,
+            last_name
+        )
         db.session.add(user)
         db.session.commit()
 
