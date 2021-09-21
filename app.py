@@ -64,14 +64,13 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        name = form.username.data
+        username = form.username.data
         pwd = form.password.data
 
-        # authenticate will return a user or False
-        user = User.authenticate(name, pwd)
 
+        user = User.authenticate(username, pwd)
         if user:
-            session["user_id"] = user.id  # keep logged in
+            session["username"] = user.username  
             return redirect("/secret")
 
         else:
@@ -83,26 +82,13 @@ def login():
 
 @app.get("/secret")
 def secret():
-    """Example hidden page for logged-in users only."""
+    """hidden page for logged-in users only."""
 
-    if "user_id" not in session:
+    if "username" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
-
-        # alternatively, can return HTTP Unauthorized status:
-        #
-        # from werkzeug.exceptions import Unauthorized
-        # raise Unauthorized()
 
     else:
         return render_template("secret.html")
 
 
-@app.get("/logout")
-def logout():
-    """Logs user out and redirects to homepage."""
-
-    # Remove "user_id" if present, but no errors if it wasn't
-    session.pop("user_id", None)
-
-    return redirect("/")
