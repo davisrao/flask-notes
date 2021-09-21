@@ -19,9 +19,9 @@ toolbar = DebugToolbarExtension(app)
 
 @app.get("/")
 def homepage():
-    """Show homepage with links to site areas."""
+    """Redirects to the /register route."""
 
-    return render_template("index.html")
+    return redirect('/register')
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -38,7 +38,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        session["user_id"] = user.id
+        session["user_id"] = user.username
 
         # on successful login, redirect to secret page
         return redirect("/secret")
