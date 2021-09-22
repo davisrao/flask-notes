@@ -96,8 +96,9 @@ class Note(db.Model):
 
     owner = db.Column(
         db.String(20),
-        db.ForeignKey('users.username')
+        db.ForeignKey('users.username'),
+        nullable=False
     )
 
     user = db.relationship('User',
-                            backref='note')
+                            backref='notes')

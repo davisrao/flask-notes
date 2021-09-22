@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, session, flash, request
+from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import connect_db, db, User, Note
@@ -86,7 +86,7 @@ def secret(username):
     else:
         user = User.query.get_or_404(username)
         form = CSRFOnlyForm()
-
+        # breakpoint()
         return render_template("user_info.html", user=user, form=form)
 
 
@@ -100,6 +100,55 @@ def logout():
 
     return redirect("/")
 
+#User Routes######################################################
+@app.post("/users/<username>/delete")
+def delete_user_and_user_posts(username):
+    """Logs user out and redirects to homepage."""
+
+    form = CSRFOnlyForm()
+
+    if form.validate_on_submit():
+
+        user = User.query.get_or_404(username)
+        notes = user.notes
+
+        for note in notes:
+            db.session.delete(note)
+
+        del session["username"]
+        db.session.delete(user)
+        db.session.commit()
+
+    return redirect("/")
+
+
+#Note Routes######################################################
+@app.route("/users/<username>/notes/add", methods=["GET", "POST"])
+def show_add_note_form_or_handle_new_note(username):
+    """Shows add new note form or handles new note submission."""
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/login")
+
+    form = NoteForm()
+
+    if form.validate_on_submit(): 
+
+        title = form.title.data
+        content = form.content.data
+        owner = username
+
+        new_note = Note(title=title, content=content, owner=owner)
+
+        db.session.add(new_note)
+        db.session.commit()
+        # FIXME: WHy does this route to http://localhost:5000/users/colin/notes/users/colin
+        return redirect(f"/users/{owner}")
+
+    else:
+        return render_template("note.html", form=form)
+
 @app.route("/notes/<int:note_id>/update", methods=["GET", "POST"])
 def show_or_update_note_details(note_id):
     """Produce note edit form or handle edit of note."""
@@ -108,7 +157,7 @@ def show_or_update_note_details(note_id):
     form = NoteForm(obj=note)
 
     if form.validate_on_submit():
-        
+
         note.title = form.title.data
         note.content = form.content.data
 
@@ -117,4 +166,19 @@ def show_or_update_note_details(note_id):
         return redirect(f"users/{note.user.username}")
 
     else:
-        return render_template("note.html", form=form,note=note)
+        return render_template("note.html", form=form, note=note)
+
+@app.post("/notes/<int:note_id>/delete")
+def delete_note(note_id):
+    """Logs user out and redirects to homepage."""
+    form = CSRFOnlyForm()
+
+    if form.validate_on_submit():
+
+        note = Note.query.get_or_404(note_id)
+        username = note.user.username
+
+        db.session.delete(note)
+        db.session.commit()
+
+    return redirect(f"/users/{username}")

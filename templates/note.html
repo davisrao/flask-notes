@@ -1,37 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 
-  <h1 class="display-4">Edit Note</h1>
+<h1 class="display-4">Edit Note</h1>
 
-  <!-- <form method="POST">  
-    {{form.hidden_tag()}}
-    <label for="title">Title</label>
-    <input name="title" value="{{note.title}}" id="edit-note-title">
+<form method="POST">
 
-    <label for="content">Content</label>
-    <input name="content" value="{{note.content}}" id="edit-note-content">
+  {{ form.hidden_tag() }}
 
-    <button type="submit">Save Edits</button>
+  {% for field in form
+  if field.widget.input_type != 'hidden' %}
+  <p>
+    {{ field.label }}
+    {{ field }}
 
-  </form> -->
-
-  <form method="POST">
-
-    {{ form.hidden_tag() }}
-  
-    {% for field in form
-    if field.widget.input_type != 'hidden' %}
-    <p>
-      {{ field.label }}
-      {{ field }}
-  
-      {% for error in field.errors %}
-      {{ error }}
-      {% endfor %}
-    </p>
+    {% for error in field.errors %}
+    {{ error }}
     {% endfor %}
-  
-    <button type="submit">Save</button>
-  
+  </p>
+  {% endfor %}
 
-{% endblock %}
+  <button class="btn btn-primary" type="submit">Save</button>
+
+
+  {% endblock %}

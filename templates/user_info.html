@@ -10,12 +10,18 @@
   <li>First Name: {{user.first_name}}</li>
   <li>Last Name: {{user.last_name}}</li>
 </ul>
+
+<h2>Notes</h2>
 <ul>
-  {% for note in user.notes%}
-  <li>
+  {% for note in user.notes %}
+  <li class="mt-2">
     {{note.title}}
-    <a href="/notes/{{note.id}}/update">Edit</a>
-    <a>Delete</a>
+    <a href="/notes/{{note.id}}/update" class="btn btn-primary">Edit</a>
+    <form class="mt-4" action="/notes/{{note.id}}/delete" method="POST">
+      {{form.hidden_tag()}}
+      <button class="btn btn-warning">Delete Note</button>
+    </form>
+    
   </li>
   {% endfor %}
 </ul>
@@ -24,5 +30,12 @@
   {{form.hidden_tag()}}
   <button class="btn btn-danger">Logout</button>
 </form>
+<!-- <br> -->
+<form class="mt-4" action="/users/{{user.username}}/delete" method="POST">
+  {{form.hidden_tag()}}
+  <button class="btn btn-warning">Delete User</button>
+</form>
+
+<a class="btn btn-info mt-4" href="/users/{{user.username}}/notes/add">Add a new note</a>
 
 {% endblock %}
